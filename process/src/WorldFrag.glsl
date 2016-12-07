@@ -38,7 +38,7 @@ void main() {
     float d3 = 1000.0; // distance to origin
     float d4 = 1000.0; // based on the fractional decimals of the complex number
     vec2 z = (-1.0 + 2.0 * p);
-    for(int i = 0; i < 80; i++)
+    for(int i = 0; i < 32; i++)
     {
         z = cc + vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y );
         d1 = min(d1, abs(z.y + sin(z.y)));

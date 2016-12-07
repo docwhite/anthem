@@ -19,8 +19,8 @@ public class Process extends PApplet{
 	long currentTime;
 	
 	// Screen dimensions
-	int w = 450;
-	int h = 450;
+	int w = 640;
+	int h = 480;
 	
 	// Uniforms
 	float[] Offset = {-0.07821107f, 0.02234602f};
@@ -61,6 +61,7 @@ public class Process extends PApplet{
 	                println("Appending new object parsing the rating from the tweet.");
 	                PImage img = loadImage(tweet.getString("image"));
 	                pool.add(img);
+	                pictureIdx = pool.size() - 1;
 	            } catch (Exception e) {
 	                println("Tweet could not be parsed: " + body);
 	            }
@@ -168,7 +169,7 @@ public class Process extends PApplet{
     	
     	
     	// It's better to fix a frame rate for the Time uniform to be consistent
-    	frameRate(24);
+    	frameRate(20);
     }
     
     public void loadTweetsFromDatabase() {
@@ -190,7 +191,7 @@ public class Process extends PApplet{
     	shader(world);
     	world.set("Time", (float)((currentTime - startTime)/1000.0));
     	
-    	if (useServer && frameCount % 3 != 0) {
+    	if (useServer) {
     		if (myClient.available() > 0) {
     			dataIn = myClient.readString();
         		orientation = dataIn.split(">")[1].split(",");
@@ -208,7 +209,7 @@ public class Process extends PApplet{
     	// World full screen quad
         beginShape(QUADS);
         noStroke();
-        texture(pool.get(0));
+        texture(pool.get(pictureIdx));
         vertex(0, h, 0 ,h);
         vertex(w, h, w, h);
         vertex(w, 0, w, 0);
