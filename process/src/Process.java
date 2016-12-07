@@ -9,6 +9,10 @@ import java.util.*;
 public class Process extends PApplet{
 	PShader world; // Full screen quad shader
 	
+	// Timer in milliseconds
+	long startTime;
+	long currentTime;
+	
 	// Screen dimensions
 	int w = 640;
 	int h = 468;
@@ -89,6 +93,9 @@ public class Process extends PApplet{
     }
 
     public void setup(){
+    	startTime = System.currentTimeMillis();
+    	currentTime = startTime;
+    	
     	// Start a connection with the web socket
     	if (useServer && firstTime) {
             myClient = new Client(this, raspberryPi, portNo ); 
@@ -161,10 +168,11 @@ public class Process extends PApplet{
         		orientation = dataIn.split(">")[1].split(",");        		
         	}
         }
+        currentTime = System.currentTimeMillis();
     	
         // Bind the shader and set uniforms
     	shader(world);
-    	world.set("Time", (float) frameCount / (float) frameRate);
+    	world.set("Time", (float)((currentTime - startTime)/1000.0));
     	world.set("Pitch", Float.parseFloat(orientation[0]));
     	world.set("Roll",  Float.parseFloat(orientation[1]));
     	world.set("Yaw",   Float.parseFloat(orientation[2]));
