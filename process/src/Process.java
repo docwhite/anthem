@@ -1,21 +1,31 @@
 import processing.core.*;
 import processing.net.*;
 import processing.opengl.*;
+import themidibus.*;
 import twitter4j.*;
 import twitter4j.conf.*;
 import java.util.*;
 
 
 public class Process extends PApplet{
-	PShader world; // Full screen quad shader
+	// Full screen quad shader
+	PShader world;
+
+	// For intercepting MIDI
+	MidiBus myBus;
 	
 	// Timer in milliseconds
 	long startTime;
 	long currentTime;
 	
 	// Screen dimensions
-	int w = 640;
-	int h = 468;
+	int w = 450;
+	int h = 450;
+	
+	// Uniforms
+	float[] Offset = {-0.07821107f, 0.02234602f};
+	float ColorPower = 4.39f;
+	float ColorMult = 2.549f;
 	
 	// Database
 	String dbPath = "database.json";
@@ -25,7 +35,7 @@ public class Process extends PApplet{
 	ArrayList<PImage> pool;
 	int pictureIdx;
 
-	boolean useServer = false;                // If no server pitch yaw and roll will be 0
+	boolean useServer = true;                // If no server pitch yaw and roll will be 0
 		Client myClient;                      // To connect to Raspberry Pi socket
 		String dataIn;                        // Data from web socket
 		String[] orientation = new String[3]; // Orientation data will be placed here
@@ -96,9 +106,14 @@ public class Process extends PApplet{
     	startTime = System.currentTimeMillis();
     	currentTime = startTime;
     	
+    	// Setup MIDI
+    	MidiBus.list();
+    	myBus = new MidiBus(this, 1, 0);
+    	
     	// Start a connection with the web socket
     	if (useServer && firstTime) {
-            myClient = new Client(this, raspberryPi, portNo ); 
+            myClient = new Client(this, raspberryPi, portNo );
+            myClient.write("INITIALIZING");
             firstTime = false;
         }
     	
@@ -137,13 +152,23 @@ public class Process extends PApplet{
         // Shader
     	world = loadShader("WorldFrag.glsl", "WorldVert.glsl");
     	world.set("Time",  (float) 0);
-    	world.set("Pitch", (float) 0);
-    	world.set("Roll",  (float) 0);
-    	world.set("Yaw",   (float) 0);
+    	world.set("Pitch", (float) 1.08);
+    	world.set("Roll",  (float) 0.0);
+    	world.set("Yaw",   (float) 1.1023157);
+    	world.set("ImgResolution", (float) 512.0, (float) 512.0);
+    	world.set("Offset", Offset[0], Offset[1]);
+    	world.set("Zoom", (float) 0.972067);
+    	world.set("ColorPower", (float) ColorPower);
+    	world.set("ColorMult", (float) ColorMult); 
     	world.set("Resolution", (float) w, (float) h);
         
+    	
+
+    	
+    	
+    	
     	// It's better to fix a frame rate for the Time uniform to be consistent
-    	frameRate(30);
+    	frameRate(24);
     }
     
     public void loadTweetsFromDatabase() {
@@ -161,22 +186,25 @@ public class Process extends PApplet{
     	// Draw the image
     	image(pool.get(pictureIdx), 0, 0, w, h);
     	
-    	// Parse data from socket message (as Strings)
-        if (useServer) {
-        	if (myClient.available() > 0) {
-        		dataIn = myClient.readString();
-        		orientation = dataIn.split(">")[1].split(",");        		
-        	}
-        }
-        currentTime = System.currentTimeMillis();
-    	
         // Bind the shader and set uniforms
     	shader(world);
     	world.set("Time", (float)((currentTime - startTime)/1000.0));
-    	world.set("Pitch", Float.parseFloat(orientation[0]));
-    	world.set("Roll",  Float.parseFloat(orientation[1]));
-    	world.set("Yaw",   Float.parseFloat(orientation[2]));
     	
+    	if (useServer && frameCount % 3 != 0) {
+    		if (myClient.available() > 0) {
+    			dataIn = myClient.readString();
+        		orientation = dataIn.split(">")[1].split(",");
+             	world.set("Pitch", Float.parseFloat(orientation[0]));
+            	world.set("Roll",  Float.parseFloat(orientation[1]));
+            	world.set("Yaw",   Float.parseFloat(orientation[2]));
+    		}
+    		
+    		myClient.write("CONTINUE");
+
+    	}
+
+        currentTime = System.currentTimeMillis();
+
     	// World full screen quad
         beginShape(QUADS);
         noStroke();
@@ -186,6 +214,46 @@ public class Process extends PApplet{
         vertex(w, 0, w, 0);
         vertex(0, 0, 0, 0);
         endShape();
+    }
+    
+    public void exit()
+    {
+    	if (useServer) {
+    		myClient.write("FINISHED");
+    		super.exit();
+    	}
+    }
+    
+    public void controllerChange(int channel, int number, int value) {
+    	if (number == 0) {
+    		float t = (float) value / (float) 127.0;
+    		float result = 0.01f*t + 1.1f * (1.0f-t); 
+    		world.set("Zoom", result);
+    	}
+    	if (number == 1) {
+    		float t = (float) value / (float) 127.0;
+    		float result = 0.8f*(1.0f-t) + t*(-0.8f);
+    		Offset[0] = result;
+    		world.set("Offset", Offset[0], Offset[1]);
+    	}
+    	if (number == 2) {
+    		float t = (float) value / (float) 127.0;
+    		float result = 0.8f*(1.0f-t) + t*(-0.8f);
+    		Offset[1] = result;
+    		world.set("Offset", Offset[0], Offset[1]);
+    	}
+    	if (number == 3) {
+    		float t = (float) value / (float) 127.0;
+    		float result = 0.25f*(1.0f-t) + t*(7.0f);
+    		ColorPower = result;
+    		world.set("ColorPower", ColorPower);
+    	}
+    	if (number == 4) {
+    		float t = (float) value / (float) 127.0;
+    		float result = 0.25f*(1.0f-t) + t*(6.0f);
+    		ColorMult = result;
+    		world.set("ColorMult", ColorMult);
+    	}
     }
 
 }

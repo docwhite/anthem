@@ -10,56 +10,59 @@ uniform float Pitch;
 uniform float Yaw;
 uniform float Roll;
 uniform vec2 Resolution;
+uniform vec2 ImgResolution;
+uniform vec2 Offset;
+uniform float Zoom;
+uniform float ColorPower;
+uniform float ColorMult;
 uniform sampler2D texture;
 
 varying vec4 vertTexCoord;
 
-float r(vec2 n) {
-    return fract(cos(dot(n,vec2(36.26,73.12)))*354.63);
-}
-
-float noise(vec2 n)
-{
-    vec2 fn = floor(n);
-    vec2 sn = smoothstep(0.,1.,fract(n));
-
-    float h1 = mix(r(fn),           r(fn+vec2(1,0)), sn.x);
-    float h2 = mix(r(fn+vec2(0,1)), r(fn+1.)       , sn.x);
-    return mix(h1,h2,sn.y);
-}
-
-float perlin(vec2 n) {
-    return noise(n/32.)*0.5875+noise(n/16.)/5.+noise(n/8.)/10.+noise(n/4.)/20.+noise(n/2.)/40.+noise(n)/80.;
-}
-
-float calculate(vec2 p)
-{
-	vec2 c = vec2(-0.745+0.01*sin(Pitch), 0.186+0.02*cos(Yaw));
-
-	vec2 z = p;
-	vec2 dz = vec2(1.0, 0.0);
-
-	float dist = 1e20;
-
-	for (int i = 0; i < 128; i++)
-	{
-		dz = 2.0 * vec2(z.x*dz.x - z.y*dz.y, z.x*dz.y + z.y*dz.x);
-		z = vec2(z.x*z.x - z.y*z.y, 2.0*z.x*z.y) + c;
-		if (dot(z,z) > 200.0) break;
-	}
-
-	float d = sqrt(dot(z,z) / dot(dz,dz)) * log(dot(z,z));
-	return clamp( 150*d, 0.0, 1.0 );
-}
 
 void main() {
-	vec2 p = gl_FragCoord.xy / Resolution.xy;
-	p = -1.0 + 2.0*p;
-	p.x *= Resolution.x/Resolution.y;
-	float t = calculate(p);
+	vec2 fragCoord = gl_FragCoord.xy;
 
-	vec4 color = vec4(t, t, t, 1.0);
-	vec4 image = texture2D(texture, vertTexCoord.st);
+    vec2 p = Zoom * fragCoord / Resolution + Offset;
 
-	gl_FragColor = vec4(vec3(perlin(Time*16.+gl_FragCoord.xy/2.)),1.0);
+    p.x *= Resolution.x / Resolution.y;
+
+    float real = 0.5 * cos(Pitch + 0.006 * cos(Time));
+    float imag = 0.5 * sin(Yaw   + 0.003 * sin(Time));
+    vec2 cc = vec2( real, imag );
+    cc *= 1.1;
+
+    vec4 dm = vec4(2000.0);
+    float d1 = 1000.0; // based on sine of imaginary part
+    float d2 = 1000.0; // based on sine of real part
+    float d3 = 1000.0; // distance to origin
+    float d4 = 1000.0; // based on the fractional decimals of the complex number
+    vec2 z = (-1.0 + 2.0 * p);
+    for(int i = 0; i < 80; i++)
+    {
+        z = cc + vec2( z.x*z.x - z.y*z.y, 2.0*z.x*z.y );
+        d1 = min(d1, abs(z.y + sin(z.y)));
+        d2 = min(d2, abs(1.0+z.x + 0.5*sin(z.x)));
+        d3 = min(d3, dot(z,z));
+        d4 = min(d4, length(fract(z)-0.5));
+
+    }
+    vec3 color;
+
+    vec3 image_sample_1 = texture(texture, vec2(0.2)).xyz;
+    vec3 image_sample_2 = texture(texture, vec2(0.5)).xyz;
+    vec3 image_sample_3 = texture(texture, vec2(0.8)).xyz;
+
+    vec3 image = texture(texture, clamp(pow(abs(z.xy), vec2(0.5)), vec2(0.0), vec2(1.0))).xyz;
+
+    color = vec3(d4);
+    color = mix( color, image_sample_1, min(1.0,pow(d1*0.25,0.20)) );
+    color = mix( color, image_sample_2, min(1.0,pow(d2*0.50,0.50)) );
+    color = mix( color, image_sample_3, 1.0 - min(1.0,pow(d3,0.15) ));
+
+    color = mix( color, image.xyz, pow(d3, 0.3) );
+    color = ColorMult * pow(color, vec3(ColorPower));
+    color = clamp( color, vec3(0.0), vec3(1.0) );
+
+    gl_FragColor = vec4(color, 1.0);
 }

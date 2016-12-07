@@ -10,5 +10,6 @@
 	<classpathentry kind="lib" path="libs/net.jar"/>
 	<classpathentry kind="lib" path="libs/twitter4j-stream404.jar"/>
 	<classpathentry kind="lib" path="libs/twitter4j404.jar"/>
+	<classpathentry kind="lib" path="libs/themidibus.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
