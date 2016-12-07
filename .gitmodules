@@ -1,0 +1,4 @@
+[submodule "shadermaker"]
+	path = shadermaker
+        branch = anthem
+	url = git@github.com:docwhite/ShaderMaker.git
