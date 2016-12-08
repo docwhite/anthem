@@ -1,0 +1,3 @@
+[submodule "shadermaker"]
+	path = shadermaker
+	url = git@github.com:docwhite/ShaderMaker.git
