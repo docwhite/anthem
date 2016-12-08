@@ -5,30 +5,27 @@ precision mediump int;
 
 #define PI 3.14159265358979323846
 
-uniform float Time;
-uniform float Pitch;
-uniform float Yaw;
-uniform float Roll;
-uniform vec2 Resolution;
-uniform vec2 ImgResolution;
-uniform vec2 Offset;
-uniform float Zoom;
-uniform float ColorPower;
 uniform float ColorMult;
+uniform float ColorPower;
+uniform vec2  Offset;
+uniform float Pitch;
+uniform float Roll;
+uniform vec2  Resolution;
+uniform float Time;
+uniform float Yaw;
+uniform float Zoom;
+
 uniform sampler2D texture;
 
 varying vec4 vertTexCoord;
 
-
 void main() {
-	vec2 fragCoord = gl_FragCoord.xy;
-
+    vec2 fragCoord = gl_FragCoord.xy;
     vec2 p = Zoom * fragCoord / Resolution + Offset;
-
     p.x *= Resolution.x / Resolution.y;
 
     float real = 0.5 * cos(Pitch + 0.006 * cos(Time));
-    float imag = 0.5 * sin(Yaw   + 0.003 * sin(Time));
+    float imag = 0.5 * sin(Yaw   + 0.006 * sin(Time));
     vec2 cc = vec2( real, imag );
     cc *= 1.1;
 
