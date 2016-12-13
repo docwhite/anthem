@@ -29,6 +29,7 @@ processing.data.JSONArray db;
 ArrayList<PImage> pool;
 int picture_idx;
 
+// Raspberry Pi Web Socket configuration
 boolean useServer = true;   // If no server orientaiton won't work
   String[] orientation = {"1.08", "1.1023157", "0.0"}; // Placeholder
   String raspberryPi = "192.168.0.43";  // Raspberry Pi IP
