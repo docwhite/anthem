@@ -4,6 +4,8 @@ import sys
 
 from sense_hat import SenseHat
 
+# Minimum luminosity value
+min_light = 51.0
 
 # Instance of the Pi Sense Hat
 sense = SenseHat()
@@ -43,12 +45,13 @@ while True:
     else:
         # Get orientation in radians
         orientation = sense.get_orientation_radians()
-
+	
+	
         # I paint on LED screen for visual debugging
         color = [
-            int(255.0 * (0.5 + 0.5 * math.sin(float(orientation['pitch'])))),
-            int(255.0 * (0.5 + 0.5 * math.sin(float(orientation['roll'])))),
-            int(255.0 * (0.5 + 0.5 * math.sin(float(orientation['yaw'])))),
+            int(min_light + (255.0 - min_light) * (0.5 + 0.5 * math.sin(float(orientation['pitch'])))),
+            int(min_light + (255.0 - min_light) * (0.5 + 0.5 * math.cos(float(orientation['roll'])))),
+            int(min_light + (255.0 - min_light) * (0.5 + 0.5 * math.cos(float(orientation['yaw'])))),
         ]
         sense.set_pixels([color for i in range(64)])
         conn.send(">{pitch},{roll},{yaw}".format(**orientation))
