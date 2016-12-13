@@ -7,21 +7,10 @@ uniform float Time;
 uniform vec2  Resolution;
 uniform float Pitch;
 uniform float Roll;
-uniform float Yaw;
 
 const float Detail = 0.0025;
 
 mat4 Rot4X(float a) {
-    float c = cos(a);
-    float s = sin(a);
-    
-    return mat4( 1, 0, 0, 0,
-                 0, c,-s, 0,
-                 0, s, c, 0,
-                 0, 0, 0, 1);
-}
-
-mat4 Rot4Y(float a) {
     float c = cos(a);
     float s = sin(a);
     

@@ -72,7 +72,6 @@ void draw(){
 
   world.set("Pitch", Float.parseFloat(orientation[0]));
   world.set("Roll",  Float.parseFloat(orientation[1]));
-  world.set("Yaw",   Float.parseFloat(orientation[2]));
 
   current_time = millis();
 
