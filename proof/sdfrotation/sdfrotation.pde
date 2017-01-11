@@ -2,6 +2,10 @@ import processing.core.*;
 import processing.net.*;
 import processing.opengl.*;
 import themidibus.*;
+import codeanticode.syphon.*;
+
+SyphonServer sserver;
+PGraphics canvas;
 
 PImage img;     // Image that will act as a texture to the fractal shader
 PShader world;  // Shader files under data/
@@ -16,7 +20,7 @@ int w = 640, h = 480;
 // Raspberry Pi Web Socket configuration
 boolean useServer = true;   // If no server orientaiton won't work
   String[] orientation = {"0.0", "0.0", "0.0"}; // Placeholder
-  String raspberryPi = "192.168.0.43";  // Raspberry Pi IP
+  String raspberryPi = "192.168.1.168";  // Raspberry Pi IP
   int portNo  = 7871;                   // Socket port
   Client myClient;                      // To connect to Raspberry Pi socket
   String dataIn;                        // Data from web socket
@@ -32,9 +36,15 @@ void exit()
 } // exit
 
 
+void settings() {
+  size(640, 480, P3D);
+  PJOGL.profile=1;
+}
+
 // ==============================SETUP==========================================
 void setup() {
-  size(640, 480, P3D);
+  canvas = createGraphics(640, 480, P3D);
+  sserver = new SyphonServer(this, "SDF Rotation");
   orientation[0] = "0.0"; // Pitch
   orientation[1] = "0.0"; // Yaw
   orientation[2] = "0.0"; // Roll
@@ -49,7 +59,7 @@ void setup() {
     firstTime = false;
   }
     
-  world = loadShader("WorldFrag.glsl", "WorldVert.glsl");
+  world = canvas.loadShader("WorldFrag.glsl", "WorldVert.glsl");
   world.set("Time",  (float) 0);
   world.set("Resolution", (float) w, (float) h);
     
@@ -58,7 +68,7 @@ void setup() {
 
 // ===============================DRAW==========================================
 void draw(){  
-  shader(world);
+  canvas.shader(world);
   world.set("Time", (float)((current_time - start_time)/1000.0));
   
   if (useServer) {
@@ -76,11 +86,18 @@ void draw(){
   current_time = millis();
 
   // World full screen quad
-  beginShape(QUADS);
-  noStroke();
-  vertex(0, h, 0 ,h);
-  vertex(w, h, w, h);
-  vertex(w, 0, w, 0);
-  vertex(0, 0, 0, 0);
-  endShape();
+  canvas.beginDraw();
+  canvas.beginShape(QUADS);
+  canvas.noStroke();
+  canvas.vertex(0, h, 0 ,h);
+  canvas.vertex(w, h, w, h);
+  canvas.vertex(w, 0, w, 0);
+  canvas.vertex(0, 0, 0, 0);
+  canvas.endShape();
+  canvas.endDraw();
+
+  image(canvas, 0, 0);
+
+  sserver.sendImage(canvas);
+  
 }
