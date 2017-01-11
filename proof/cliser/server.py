@@ -17,7 +17,7 @@ scroll_speed = 0.05
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Address and port where raspberry pi serves
-address = ('192.168.0.43', 7871)
+address = ('192.168.43.167', 7871)
 
 # Bind to device
 server_socket.bind(address)
@@ -37,7 +37,7 @@ conn, address = establish_connection()
 
 while True:
     # If client finished connection we listen for a new one
-    if conn.recv(2048) == "FINISHED":
+    if "FINISHED" in conn.recv(2048).strip():
         sense.show_message("Disconnecting", scroll_speed=scroll_speed)
         conn.close()
         conn, address = establish_connection()
@@ -55,5 +55,6 @@ while True:
         ]
         sense.set_pixels([color for i in range(64)])
         conn.send(">{pitch},{roll},{yaw}".format(**orientation))
+        #conn.send("aaa")
 
 sense_hat.show_message("Bye!")
