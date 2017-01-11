@@ -32,7 +32,7 @@ int picture_idx;
 // Raspberry Pi Web Socket configuration
 boolean useServer = true;   // If no server orientaiton won't work
   String[] orientation = {"1.08", "1.1023157", "0.0"}; // Placeholder
-  String raspberryPi = "192.168.0.43";  // Raspberry Pi IP
+  String raspberryPi = "192.168.43.167"; // Raspberry Pi IP
   int portNo  = 7871;                   // Socket port
   Client myClient;                      // To connect to Raspberry Pi socket
   String dataIn;                        // Data from web socket
@@ -40,6 +40,7 @@ boolean useServer = true;   // If no server orientaiton won't work
 
 TwitterStream twitter;
 String body;
+
 
 // Twitter listener will perform actions on received status updates
 StatusListener listener = new StatusListener() {
@@ -60,7 +61,7 @@ StatusListener listener = new StatusListener() {
         println("Appending new object parsing the rating from the tweet.");
 
         // Process the user avatar
-        PImage img = loadImage(tweet.getString("image"));
+        img = loadImage(tweet.getString("image"));
         pool.add(img);
         picture_idx = pool.size() - 1;
       } catch (Exception e) {
@@ -90,6 +91,7 @@ StatusListener listener = new StatusListener() {
   }
 }; // listener
 
+
 void setupTwitter() {
   ConfigurationBuilder builder = new ConfigurationBuilder();
   builder.setOAuthConsumerKey("ZlE3paY5xEwKL1OO4KeuwADuK");
@@ -109,16 +111,19 @@ void setupTwitter() {
   twitter.filter(tweetFilterQuery);
 } // setupTwitter
 
+
 void loadTweetsFromDatabase() {
   int array_size = db.size();
   println("array_size: " + array_size);
   for (int i = 0; i < array_size; i++) {
       processing.data.JSONObject current = db.getJSONObject(i);
-      PImage img =  loadImage(current.getString("image"));
+      img =  loadImage(current.getString("image"));
+      println(current.getString("image"));
       img.resize(w, h);
       pool.add(img);
   }
 } // loadTweetsFromDatabase
+
 
 void exit()
 {
@@ -127,6 +132,7 @@ void exit()
   }
   super.exit();
 } // exit
+
 
 void controllerChange(int channel, int number, int value) {
   if (number == 0) {
@@ -159,6 +165,14 @@ void controllerChange(int channel, int number, int value) {
     world.set("ColorMult", color_mult);
   }
 
+  if (number == 44 && value == 127) {
+    if (picture_idx == pool.size() - 1) {
+      picture_idx = 0;
+    } else {
+      picture_idx += 1;
+    }
+  }
+
   if (number == 45) { // Record circle
     if (value == 127) {
       recording = true;
@@ -167,6 +181,7 @@ void controllerChange(int channel, int number, int value) {
     }
   }
 } // controllerChange
+
 
 // ==============================SETUP==========================================
 void setup() {
@@ -216,6 +231,7 @@ void setup() {
     
   frameRate(20);
 }
+
 
 // ===============================DRAW==========================================
 void draw(){  
