@@ -1,14 +1,35 @@
+#include <fstream>
+
 #include "ofApp.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+//    std::string url = "https://httpbin.org/get";
+//    ofxHTTP::Client httpclient;
+//    auto response = httpclient.get(url);
+//    
+//    if (response->isSuccess()){
+//        ofLog(OF_LOG_NOTICE, response->getBuffer());
+//    } else {
+//        ofLog(OF_LOG_NOTICE, "OOPS");
+//    }
+    
+    
+    
+    
     orientation[0] = 0.0f;
     orientation[1] = 0.0f;
     orientation[2] = 0.0f;
     
-    client.setMessageDelimiter(" ");
-    connectionSuccess = client.setup("192.168.43.167", 7871);
+    ifstream fin;
+    fin.open( ofToDataPath("ip.txt").c_str());
+    string ip;
+    getline(fin, ip);
     
+    
+    
+    client.setMessageDelimiter(" ");
+    connectionSuccess = client.setup(ip, 7871);
     
 #ifdef TARGET_OPENGLES
     shader.load("shaders_gles/shader");
@@ -27,25 +48,16 @@ void ofApp::update(){
     if (connectionSuccess){
         if (client.isConnected()){
             string str = client.receiveRaw();
-            
             if (str.size()) {
                 str = ofSplitString(str, ">")[1];
-                
                 string pitch = ofSplitString(str, ",")[0];
                 string roll = ofSplitString(str, ",")[1];
-                
                 orientation[0] = ofToFloat(pitch);
                 orientation[1] = ofToFloat(roll);
-                
             }
-            
             client.send("CONTINUE");
-            
-
         }
     }
-
-
 }
 
 //--------------------------------------------------------------
