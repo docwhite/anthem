@@ -32,7 +32,7 @@ int picture_idx;
 // Raspberry Pi Web Socket configuration
 boolean useServer = true;   // If no server orientaiton won't work
   String[] orientation = {"1.08", "1.1023157", "0.0"}; // Placeholder
-  String raspberryPi = "192.168.43.167"; // Raspberry Pi IP
+  String raspberryPi;                   // Raspberry Pi IP
   int portNo  = 7871;                   // Socket port
   Client myClient;                      // To connect to Raspberry Pi socket
   String dataIn;                        // Data from web socket
@@ -186,6 +186,8 @@ void controllerChange(int channel, int number, int value) {
 // ==============================SETUP==========================================
 void setup() {
   size(640, 480, P3D);
+
+  raspberryPi = loadStrings("ip.txt")[0];
   orientation[0] = "0.0"; // Pitch
   orientation[1] = "0.0"; // Yaw
   orientation[2] = "0.0"; // Roll

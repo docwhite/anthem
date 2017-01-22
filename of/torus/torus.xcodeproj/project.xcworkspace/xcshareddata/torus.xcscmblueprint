@@ -4,36 +4,22 @@
 
   },
   "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
-    "CC64F4963C935629E4EEDB8221C0DA9B68D2313F" : 9223372036854775807,
-    "6DBA07F83F7AF99DB5F116332E6446603283BF4C" : 9223372036854775807,
     "D830E38F9EC4E3266AFE406DC29BFE0111338810" : 9223372036854775807,
-    "5DB7C332A3A89035E93556A2A38BF414005BA671" : 9223372036854775807
+    "6DBA07F83F7AF99DB5F116332E6446603283BF4C" : 9223372036854775807
   },
-  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "9CCE2987-970F-4192-94A6-DDAC8F70E9FD",
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7D067830-C148-4231-8FCC-52228470CE25",
   "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
-    "CC64F4963C935629E4EEDB8221C0DA9B68D2313F" : "..\/Apps\/of_v0.9.8_osx_release\/addons\/ofxMediaType",
-    "6DBA07F83F7AF99DB5F116332E6446603283BF4C" : "..\/Apps\/of_v0.9.8_osx_release\/addons\/ofxHTTP",
     "D830E38F9EC4E3266AFE406DC29BFE0111338810" : "anthem\/",
-    "5DB7C332A3A89035E93556A2A38BF414005BA671" : "..\/Apps\/of_v0.9.8_osx_release\/addons\/ofxJSON"
+    "6DBA07F83F7AF99DB5F116332E6446603283BF4C" : "..\/Apps\/of_v0.9.8_osx_release\/addons\/ofxHTTP"
   },
   "DVTSourceControlWorkspaceBlueprintNameKey" : "torus",
   "DVTSourceControlWorkspaceBlueprintVersion" : 204,
   "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "of\/torus\/torus.xcodeproj",
   "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
     {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:jefftimesten\/ofxJSON.git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "5DB7C332A3A89035E93556A2A38BF414005BA671"
-    },
-    {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:bakercp\/ofxHTTP.git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6DBA07F83F7AF99DB5F116332E6446603283BF4C"
-    },
-    {
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:bakercp\/ofxMediaType.git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
-      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "CC64F4963C935629E4EEDB8221C0DA9B68D2313F"
     },
     {
       "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:docwhite\/anthem",
