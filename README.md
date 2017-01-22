@@ -8,7 +8,7 @@ Folder structure:
 * **composition**: Resolume Arena compositions and setups.
 * **processing**: Processing project in .pde format.
 * **proof**: Proof of concept of the client-server web socket.
-* **dust**: FFGL plugin as Binary for Mac OS (.bundle) Windows (.dll) and
+* **dist**: FFGL plugin as Binary for Mac OS (.bundle) Windows (.dll) and
   Processing sketch already compiled and built.
 * **report**: Report written for this experiment.
 * **synth**: GLSL Synthclipse shader development project.
