@@ -47,7 +47,7 @@ StatusListener listener = new StatusListener() {
   public void onStatus(Status status) {
     body = status.getText();
     println(status.getUser().getName() + ": " + body);
-    if (body.startsWith("#VJNCCA")) {
+    if (body.startsWith("@auronplay")) {
       try {
         // Try to save the tweet to the JSON database file
         println("Saving tweet to database at " + db_path);
@@ -55,7 +55,6 @@ StatusListener listener = new StatusListener() {
         tweet.setString("body", status.getText());
         tweet.setString("image", status.getUser().getOriginalProfileImageURL());
         tweet.setString("user", status.getUser().getName());
-        tweet.setInt("rating", Integer.parseInt(status.getText().substring(8, 9)));
         db.append(tweet);
         saveJSONArray(db, db_path);
         println("Appending new object parsing the rating from the tweet.");
@@ -106,7 +105,7 @@ void setupTwitter() {
   twitter.addListener(listener);
 
   FilterQuery tweetFilterQuery = new FilterQuery();
-  tweetFilterQuery.track(new String[]{"#VJNCCA"});
+  tweetFilterQuery.track(new String[]{"@auronplay"});
 
   twitter.filter(tweetFilterQuery);
 } // setupTwitter
